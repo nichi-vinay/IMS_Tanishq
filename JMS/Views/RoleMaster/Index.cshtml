@@ -1,0 +1,115 @@
+﻿@using JMS.BAL.ViewModel
+@model JMS.BAL.ViewModel.RoleViewModel
+
+@{
+    ViewBag.Title = "Role List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var user = Session["LoggedInUser"] as LoggedInUserModel;
+    if (user?.Role != 1)
+    {
+        Response.Redirect("~/Login/Index");
+    }
+}
+
+<div class="card card-outline card-primary">
+    <div class="card-header">
+        <div class="float-left">
+            <h3>@ViewBag.Title</h3>
+        </div>
+        <div class="float-right">
+            <button class="btn btn-primary" onclick="createRoleFunction()" data-toggle="modal" data-target="#roleModalPopup">
+                <i class="fas fa-plus "></i>
+                Add New Role
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <table id="roleTable" class="table table-bordered table-striped ">
+            <thead>
+                <tr>
+                    <th>
+                        ID
+                    </th>
+                    <th>
+                        Name
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    @using (Html.BeginForm("CreateOrUpdate", "RoleMaster", FormMethod.Post, new { id = "roleForm" }))
+    {
+        <div id="roleModalPopup" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Role Details Form</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @Html.HiddenFor(m => m.Id)
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-3">Role Name<span style="color:red">*</span></label>
+
+                                <div class="col-9 validation-msg">
+                                    @Html.TextBoxFor(m => m.RoleName, new { @class = "form-control " })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+
+                                <label class="col-3">Status</label>
+                                <div class="col-9">
+                                    @Html.DropDownListFor(m => m.Status, Model.StatusList, new { @class = "form-control " })
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    @using (Html.BeginForm("DeleteRole", "RoleMaster", FormMethod.Post, new { id = "roleDeleteForm" }))
+    {
+        <div id="roleDeleteModalPopup" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Delete Role</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @Html.HiddenFor(m => m.Id,new { id="deleteRoleId"})
+                        <p> Are you sure want to delete "<label id="deleteRoleName" name="deleteRoleName"></label>" Role?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+                        <button id="deletefunction" type="submit" class="btn btn-danger">Delete Role</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    @Scripts.Render("~/Content/role")
+</div>
+

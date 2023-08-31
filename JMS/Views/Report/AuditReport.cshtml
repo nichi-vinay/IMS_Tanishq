@@ -1,0 +1,202 @@
+﻿@using JMS.BAL.ViewModel
+@model JMS.Controllers.AuditData1
+@{
+    ViewBag.Title = "Audit Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var user = Session["LoggedInUser"] as LoggedInUserModel;
+    if (user?.Role != 1)
+    {
+        Response.Redirect("~/Login/Index");
+    }
+}
+
+<div class="card card-outline card-primary">
+    <div class="card-header">
+        <div class="float-left">
+            <h3>@ViewBag.Title</h3>
+        </div>
+    </div>
+    <div class="card-body">
+        @using (Html.BeginForm("AuditReport", "Report", FormMethod.Post,
+                        new { Id = "auditForm", enctype = "multipart/form-data" }))
+        {
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="file">Upload Audit Data CSV File <span style="color:red">*</span></label>
+                    <input type="file" name="file" id="auditFile" />
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary" type="submit" onclick="validateAuditDataForm()">
+                        <i class="fa fa-chart-bar"></i>
+                        Generate Audit Report
+                    </button>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
+@if (Model.IsDataExist)
+{
+    <div class="card card-info">
+        <div class="card-header">
+            <h3 class="card-title">Audit Summary ( @DateTime.Now.ToString("MM-dd-yyyy") )</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 col-sm-6 col-12">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-info"><i class="far fa-star"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">Items from shelves</span>
+                            <span class="info-box-number">@Model.ListOfItemsFromShelves.Count</span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </div>
+                <!-- /.col -->
+                <div class="col-md-3 col-sm-6 col-12">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-success"><i class="far fa-star"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">Items from inventory</span>
+                            <span class="info-box-number">@Model.ListOfItemsFromInventory.Count</span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </div>
+                <!-- /.col -->
+                <div class="col-md-3 col-sm-6 col-12">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-warning"><i class="far fa-star"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">Items not found in shelves</span>
+                            <span class="info-box-number">@Model.ListOfDiffrenceItemsFromShelves.Count</span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </div>
+                <!-- /.col -->
+                <div class="col-md-3 col-sm-6 col-12">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-danger"><i class="far fa-star"></i></span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">Iems not found in inventory</span>
+                            <span class="info-box-number">@Model.ListOfDifferenceItemsFromInventory.Count</span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </div>
+                <!-- /.col -->
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card collapsed-card card-info">
+                        <div class="card-header">
+                            <h3 class="card-title">List of Diffrence Items from Inventory (Count: @Model.ListOfDifferenceItemsFromInventory.Count)</h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <table id="ShelvesData" class="table table-bordered table-striped myTable2">
+                                <tr>
+                                    <th>Inventory ID </th>
+                                    <th>Description</th>
+                                    <th>CaratWeight</th>
+                                    <th>GoldWeight</th>
+                                    <th>GoldContent</th>
+                                    <th>Pieces</th>
+                                    <th>OtherStones</th>
+                                    <th>Price</th>
+                                </tr>
+                                @foreach (var item in Model.ListOfDifferenceItemsFromInventory)
+                                {
+                                    <tr>
+                                        <td>@item.Id</td>
+                                        <td>@item.Description</td>
+                                        <td>@item.CaratWeight</td>
+                                        <td>@item.GoldWeight</td>
+                                        <td>@item.GoldContent</td>
+                                        <td>@item.Pieces</td>
+                                        <td>0</td>
+                                        <td>@item.Price</td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card collapsed-card card-info">
+                        <div class="card-header">
+                            <h3 class="card-title">List of Diffrence Items from Shelves (Count: @Model.ListOfDiffrenceItemsFromShelves.Count)</h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <table id="InventoryData" class="table table-bordered table-striped myTable2">
+                                <tr>
+                                    <th>Inventory ID </th>
+                                    <th>Description</th>
+                                    <th>CaratWeight</th>
+                                    <th>GoldWeight</th>
+                                    <th>GoldContent</th>
+                                    <th>Pieces</th>
+                                    <th>OtherStones</th>
+                                    <th>Price</th>
+                                </tr>
+                                @foreach (var item in Model.ListOfDiffrenceItemsFromShelves)
+                                {
+                                    <tr>
+                                        <td>@item.Id</td>
+                                        <td>@item.Description</td>
+                                        <td>@item.CaratWeight</td>
+                                        <td>@item.GoldWeight</td>
+                                        <td>@item.GoldContent</td>
+                                        <td>@item.Pieces</td>
+                                        <td>0</td>
+                                        <td>@item.Price</td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+  
+
+
+
+}
+else
+{
+    <div class="card collapsed-card">
+        <div class="card-header">
+            <h3 class="card-title">No data found ...</h3>
+        </div>
+    </div>
+}
+
+@Scripts.Render("~/Content/auditreport")

@@ -1,0 +1,550 @@
+﻿@using JMS.BAL.ViewModel
+@model JMS.BAL.ViewModel.InvoiceListViewModel
+
+@{
+    ViewBag.Title = "Invoice List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+
+    <div class="card card-outline card-primary">
+        @{
+
+            var reNavigation = TempData["rePrint"] as bool?;
+            if (reNavigation == null ? false : reNavigation.Value)
+            {
+                <input class="d-none" id="redirect_fromDate" name="redirect_fromDate" value="@TempData["fromDate"]" />
+                <input class="d-none" id="redirect_toDate" name="redirect_toDate" value="@TempData["toDate"]" />
+                <input class="d-none" id="redirect_phoneNumber" name="redirect_phoneNumber" value="@TempData["phoneNumber"]" />
+                <input class="d-none" id="redirect_statusValue" name="redirect_statusValue" value="@TempData["statusValue"]" />
+                <input class="d-none" id="redirect_currentPage" name="redirect_currentPage" value=@TempData["currentPage"] />
+                <input class="d-none" id="redirect_filterInvoiceId" name="redirect_filterInvoiceId" value="@TempData["filterInvoiceId"]" />
+            }
+            else
+            {
+                <input class="d-none" id="redirect_fromDate" name="redirect_fromDate" value="" />
+                <input class="d-none" id="redirect_toDate" name="redirect_toDate" value="" />
+                <input class="d-none" id="redirect_phoneNumber" name="redirect_phoneNumber" value="" />
+                <input class="d-none" id="redirect_statusValue" name="redirect_statusValue" value="" />
+                <input class="d-none" id="redirect_currentPage" name="redirect_currentPage" value="" />
+                <input class="d-none" id="redirect_filterInvoiceId" name="redirect_filterInvoiceId" value="" />
+            }
+        }
+
+        @{
+            var user = Session["LoggedInUser"] as LoggedInUserModel;
+
+            if (user?.Role == 1)
+            {
+                <input class="d-none" id="disableUserId" name="disableUserId" value="1" />
+            }
+            else
+            {
+                <input class="d-none" id="disableUserId" name="disableUserId" value="0" />
+            }
+        }
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card ">
+                        <div class="card-header">
+                            <h6 class="panel-title">Filter</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-6 col-md-2">
+                                    <div class="form-group">
+                                        <label> Invoice Id</label>
+                                        <input type="text" class="form-control" placeholder="Invoice Id" id="filterSearchId" name="filterSearchId" />
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>From Date</label>
+                                                <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                                                    <input id="fromDate" type="text" class="form-control datetimepicker-input" data-target="#reservationdate">
+                                                    <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>To Date</label>
+                                                <div class="input-group date" id="reservationdate2" data-target-input="nearest">
+                                                    <input id="toDate" type="text" class="form-control datetimepicker-input" data-target="#reservationdate2">
+                                                    <div class="input-group-append" data-target="#reservationdate2" data-toggle="datetimepicker">
+                                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="form-group">
+                                        <label>Customer Phone Number</label>
+                                        <div class="input-group validation-msg">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control" placeholder="(999) 999-9999" id="CustomerPhone" name="CustomerPhone" />
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-sm-6 col-md-2">
+                                    <div class="form-group">
+                                        <label>Status</label>
+                                        @Html.DropDownListFor(m => m.Status, Model.ValidStatusList, "Select Status", new { id = "filterStatus", @class = "form-control" })
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                        <div class="card-footer">
+                            <button type="button" id="filterInvoiceListByDate" class="btn btn-primary">Search</button>
+                            <button type="button" id="clearDates" class="btn btn-warning">Clear</button>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div id="allTaxDetails" class="card ">
+                        <div class="card-header">
+                            <h6 class="panel-title">Tax Details</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">Taxable Amount</label>
+                                <input id="Taxable" class="form-control col-sm-7" placeholder="Taxable" aria-label="Search">
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">Non-Taxable Amount</label>
+                                <input id="Non-Taxable" class="form-control col-sm-7" placeholder="Non-Taxable" aria-label="Search">
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">Total Amount </label>
+                                <input id="Total" class="form-control col-sm-7" placeholder="Total" aria-label="Search">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="nestedTableDiv" class="row d-none">
+                <div class="col-md-12 col-12" style="overflow-x: hidden">
+                    <table id="invoiceList" class="table table-bordered table-condensed" style="margin-top:5px">
+                        <thead>
+                            <tr style="background-color: darkgrey">
+                                <th id="firstHeader"></th>
+                                <th>Date</th>
+                                <th>Invoice #</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>Employee</th>
+                                <th>Status</th>
+                                <th>Balance</th>
+                                <th>Status</th>
+                                <th style="width:213px !important">Actions</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "invoiceListUpdateForm" }))
+        {
+            <div id="invoiceListModalPopup" class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Invoice Update Form</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+
+                            <div class="row">
+                                <div class="col-md-12 col12">
+                                    <div class="card ">
+                                      
+                                        <div class="card-body">
+                                            @Html.HiddenFor(m => m.InvoiceId, new { id = "hiddenInvoiceId" })
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label>Customer Name</label>
+                                                    @Html.TextBoxFor(m => m.Customer, new { @class = "form-control" })
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label>Customer Phone</label>
+                                                   
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label>Status</label>
+                                                    @Html.DropDownListFor(m => m.Status, Model.StatusList, new { @class = "form-control" })
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-9">
+                                                    <label>Address</label>
+                                                    @Html.TextBoxFor(m => m.Address, new { @class = "form-control " })
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label>Tax</label>
+                                                    @Html.DropDownListFor(m => m.Tax, Model.TaxTypeList, new { @class = "form-control " })
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label>DL#</label>
+                                                    @Html.TextBoxFor(m => m.DLNumber, new { @class = "form-control " })
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label>Date of Birth</label>
+                                                    @Html.TextBoxFor(m => m.DOB, new { @class = "form-control" })
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label>Expiry Date</label>
+                                                    @Html.TextBoxFor(m => m.ExpDate, new { @class = "form-control" })
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label>Company</label>
+                                                    @Html.DropDownListFor(m => m.Company, Model.CompanyList, new { @class = "form-control" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 col-12">
+                                    <div class="card">
+                                       
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label>Sub Total</label>
+                                                    @Html.TextBoxFor(m => m.Total, new { id = "subTotal", @class = "form-control " })
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label>Cheque</label>
+                                                    @Html.TextBoxFor(m => m.Check, new { @class = "form-control " })
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label>Credit Card</label>
+                                                    @Html.TextBoxFor(m => m.CreditCard, new { @class = "form-control " })
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label>Cash</label>
+                                                    @Html.TextBoxFor(m => m.Cash, new { @class = "form-control " })
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label>Balance</label>
+                                                    @Html.TextBoxFor(m => m.Balance, new { @class = "form-control " })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+                            <button type="submit" rel="noopener" class="btn btn-primary">Update</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "invoiceListDeleteForm" }))
+        {
+            <div id="invoiceDeleteModalPopup" class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Delete Invoice</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            @Html.HiddenFor(m => m.InvoiceId, new { id = "deleteInvoiceId" })
+                            <p> Are you sure want to delete "<label id="deleteInvoiceName"></label>" Invoice?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-danger">Delete Invoice</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "getbackDeletedInvoice" }))
+        {
+            <div id="getbackInvoiceModalPopup" class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Active Invoice</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            @Html.HiddenFor(m => m.InvoiceId, new { id = "getbackInvoiceId" })
+                            <p> Are you sure want to Activate Deleted "<label id="getBackInvoiceName"></label>" Invoice?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Confirm</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "invoicePaymentsForm" }))
+        {
+            <div id="invoicePaymentModalPopup" class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Payment Details Form</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p id="balanceDisplay"></p>
+                            @Html.HiddenFor(m => m.InvoiceId, new { id = "paymentInvoiceId" })
+                            <table id="paymentTable" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            ID
+                                        </th>
+
+                                        <th>
+                                            Payment
+                                        </th>
+
+                                        <th>
+                                            Cash
+                                        </th>
+                                        <th>
+                                            Credit Card
+                                        </th>
+                                        <th>
+                                            Cheque
+                                        </th>
+                                        <th>
+                                            Date
+                                        </th>
+                                        <th>
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                </tbody>
+
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="addPaymentbtn" onclick="addPaymentFunction(this)" type="button" data-toggle="modal" data-target="#addPaymentModalPopup" class="btn btn-primary">Add</button>
+
+                            <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "addNewPaymentForm" }))
+        {
+            <div id="addPaymentModalPopup" class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Add Payment Form </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <div class="row">
+                                    <label class="col-3"></label>
+                                    <div id="validationMsg" class="col-9 " style="padding-bottom: 12px;">
+                                        <span>Please enter Cash/Credit Card/Cheque value</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <label class="col-3">Cash</label>
+                                    <div class="col-9 ">
+                                        <input type="text" class="form-control inputtext" id="cashPayment" name="cashPayment" onchange="changeFormat(this)" onkeypress="return isNumberKey(event)" onkeyup="changeInputValue(this)" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <div class="row">
+                                    <label class="col-3">Credit Card</label>
+                                    <div class="col-9 ">
+                                        <input type="text" class="form-control inputtext" id="creditCardPayment" name="creditCardPayment" onchange="changeFormat(this)" onkeypress="return isNumberKey(event)" onkeyup="changeInputValue(this)" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <div class="row">
+                                    <label class="col-3">Cheque</label>
+                                    <div class="col-9 ">
+                                        <input type="text" class="form-control inputtext" id="checkPayment" name="checkPayment" onchange="changeFormat(this)" onkeypress="return isNumberKey(event)" onkeyup="changeInputValue(this)" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Add Payment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        }
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "editPaymentForm" }))
+        {
+            <div id="editLayawayPayment" class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Layaway Payment </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p id="editBalanceDisplay"></p>
+                            <div class="form-group">
+                                <div class="row">
+                                    <label class="col-3"></label>
+                                    <div id="editValidationMsg" class="col-9 " style="padding-bottom: 12px;">
+                                        <span>Please enter Cash/Credit Card/Cheque value</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <label class="col-3">Cash</label>
+                                    <div class="col-9 ">
+                                        <input type="text" class="form-control inputtext" id="editCashPayment" name="editCashPayment" onchange="changeFormat(this)" onkeypress="return isNumberKey(event)" onkeyup="changeInputValue(this)" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <div class="row">
+                                    <label class="col-3">Credit Card</label>
+                                    <div class="col-9 ">
+                                        <input type="text" class="form-control inputtext" id="editCreditCardPayment" name="editCreditCardPayment" onchange="changeFormat(this)" onkeypress="return isNumberKey(event)" onkeyup="changeInputValue(this)" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <div class="row">
+                                    <label class="col-3">Cheque</label>
+                                    <div class="col-9 ">
+                                        <input type="text" class="form-control inputtext" id="editCheckPayment" name="editCheckPayment" onchange="changeFormat(this)" onkeypress="return isNumberKey(event)" onkeyup="changeInputValue(this)" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @using (Html.BeginForm("RedirectToInvoice", "InvoiceList", FormMethod.Post, new { id = "Redirect" }))
+        {
+            @Html.TextBox("editInvoiceId", null, new { @class = "d-none" })
+        }
+        @Scripts.Render("~/Content/invoiceList")
+    </div>
+<style>
+    td.details-control {
+        position: relative;
+        cursor: pointer;
+    }
+
+    #validationMsg, #editValidationMsg {
+        color: red;
+        position: relative;
+        top: 30px;
+    }
+
+    td.details-control:before {
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-font-smoothing: antialiased;
+        display: inline-block;
+        font-style: normal;
+        padding-left: 19px;
+        font-variant: normal;
+        text-rendering: auto;
+        line-height: 1;
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        color: #0062cc;
+        font-size: 1.2em;
+        content: "\f0fe";
+    }
+
+    tr.shown td.details-control {
+        position: relative;
+    }
+
+        tr.shown td.details-control:before {
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-font-smoothing: antialiased;
+            display: inline-block;
+            font-style: normal;
+            font-variant: normal;
+            text-rendering: auto;
+            line-height: 1;
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            color: #dc3545;
+            font-size: 1.2em;
+            content: "\f146";
+        }
+
+    th.details-control {
+        width: 50px !important;
+    }
+
+    .bootstrap-datetimepicker-widget {
+        min-width: 330px
+    }
+ 
+</style>
+
+

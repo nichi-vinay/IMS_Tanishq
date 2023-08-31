@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="c0fae3c14bfd41b0964f16d7deff42bb" Name="Diagram1">
+        <EntityTypeShape EntityType="JMSModel.Category" Width="1.5" PointX="9.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="JMSModel.Company" Width="1.5" PointX="3" PointY="8.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="JMSModel.Customer" Width="1.5" PointX="3" PointY="11.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="JMSModel.Inventory" Width="1.5" PointX="5.25" PointY="9.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="JMSModel.InventoryAudit" Width="1.5" PointX="9.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="JMSModel.InventoryStatu" Width="1.5" PointX="3" PointY="16.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="JMSModel.Invoice" Width="1.5" PointX="5.25" PointY="2" IsExpanded="true" />
+        <EntityTypeShape EntityType="JMSModel.InvoiceItem" Width="1.5" PointX="7.5" PointY="2.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="JMSModel.InvoicePayment" Width="1.5" PointX="7.5" PointY="7" IsExpanded="true" />
+        <EntityTypeShape EntityType="JMSModel.JewelType" Width="1.5" PointX="9.75" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="JMSModel.Role" Width="1.5" PointX="0.75" PointY="3.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="JMSModel.Supplier" Width="1.5" PointX="11.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="JMSModel.User" Width="1.5" PointX="3" PointY="2.875" IsExpanded="true" />
+        <AssociationConnector Association="JMSModel.FK_Invoice_Company" ManuallyRouted="false" />
+        <AssociationConnector Association="JMSModel.FK_Invoice_Customer" ManuallyRouted="false" />
+        <AssociationConnector Association="JMSModel.FK_InvoiceItems_Inventory" ManuallyRouted="false" />
+        <AssociationConnector Association="JMSModel.FK_Invoice_InventoryStatus" ManuallyRouted="false" />
+        <AssociationConnector Association="JMSModel.FK_Invoice_User" ManuallyRouted="false" />
+        <AssociationConnector Association="JMSModel.FK_InvoiceItems_Invoice" ManuallyRouted="false" />
+        <AssociationConnector Association="JMSModel.FK_InvoicePayments_Invoice" ManuallyRouted="false" />
+        <AssociationConnector Association="JMSModel.FK_User_Role" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

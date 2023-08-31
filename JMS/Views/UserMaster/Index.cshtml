@@ -1,0 +1,207 @@
+﻿@using JMS.BAL.ViewModel
+@model JMS.BAL.ViewModel.UserViewModel
+@{
+    ViewBag.Title = "User List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var user = Session["LoggedInUser"] as LoggedInUserModel;
+    if (user?.Role != 1)
+    {
+        Response.Redirect("~/Login/Index");
+    }
+}
+
+<div class="card card-outline card-primary">
+    <div class="card-header">
+        <div class="float-left">
+            <h3>@ViewBag.Title</h3>
+        </div>
+        <div class="float-right">
+            <button class="btn btn-primary" onclick="createUserFunction()" data-toggle="modal" data-target="#UserModalPopup">
+                <i class="fas fa-plus "></i>
+                Add New User
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <table id="userTable" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        ID
+                    </th>
+                    <th>
+                        User ID
+                    </th>
+
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Role Name
+                    </th>
+                    <th>
+                        Phone
+                    </th>
+                    <th>
+                        Username
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    @using (Html.BeginForm("CreateOrUpdate", "UserMaster", FormMethod.Post, new { id = "userForm" }))
+    {
+        <div id="UserModalPopup" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">User Details Form</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @Html.HiddenFor(m => m.Id)
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-3">User ID<span style="color:red">*</span></label>
+                                <div class="col-9 validation-msg">
+                                    @Html.TextBoxFor(m => m.UserId, new { @class = "form-control" })
+                                </div>                               
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-3">Name<span style="color:red">*</span></label>
+                                <div class="col-9 validation-msg">
+                                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control " })
+                                </div>
+                             
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-3">Role Name</label>
+                                <div class="col-9 ">
+                                    @Html.DropDownListFor(m => m.RoleId, Model.RolesList, new { @class = "form-control " })
+                                </div>
+                               
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-3">Phone<span style="color:red">*</span></label>
+                                <div class="col-9 validation-msg">
+                                    @Html.TextBoxFor(m => m.Phone, new { @class = "form-control " })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-3">User Name<span style="color:red">*</span></label>
+                                <div class="col-9 validation-msg">
+                                    @Html.TextBoxFor(m => m.UserName, new { @class = "form-control " })
+                                </div>
+                               
+                            </div>
+                        </div>
+                        <div id="PasswordFormGroup" class="form-group">
+                            <div class="row">
+                                <label class="col-3">Password<span style="color:red">*</span></label>
+                                <div class="col-9 validation-msg">
+                                    @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-3">Status</label>
+                                <div class="col-9 ">
+                                    @Html.DropDownListFor(m => m.Status, Model.StatusList, new { @class = "form-control " })
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    @using (Html.BeginForm("UserChangePassword", "UserMaster", FormMethod.Post, new { id = "changePasswordforUserForm" }))
+    {
+        <div id="UserChangePasswordModalPopup" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Change Password</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @Html.HiddenFor(m => m.Id, new { id = "changePasswordId" })
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-3"> User ID</label>
+                                <div class="col-9">
+                                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control",id="changePaswordUserName",@readonly="readonly" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+
+                                <label class="col-3">Password<span style="color:red">*</span></label>
+                                <div class="col-9 validation-msg">
+                                    <input type="password" class="form-control" id="changePassword" name="changePassword"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    @using (Html.BeginForm("DeleteUser", "UserMaster", FormMethod.Post, new { id = "deleteUserForm" }))
+    {
+        <div id="UserDeleteModalPopup" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Delete User</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @Html.HiddenFor(m => m.Id,new { id="deleteUserId"})
+                        <p> Are you sure want to delete "<label id="deleteUserName"></label> - <label id="deleteName"></label>" User?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger">Delete User</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+	</div>
+<style>
+  
+</style>
+
+	@Scripts.Render("~/Content/user")

@@ -1,0 +1,89 @@
+﻿@using JMS.BAL.ViewModel
+
+@{
+    ViewBag.Title = "Home Page";
+    var user = Session["LoggedInUser"] as LoggedInUserModel;
+}
+
+@if (user != null && user.Role == 1)
+{
+
+    <div class="row">
+        <div class="col-6">
+            <!-- AUDIT CHART -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Inventory Audit Chart</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart">
+                        <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+
+        <div class="col-6">
+            <!-- Category Wise Sales chart -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">JewelType Wise Sales Chart - @DateTime.Now.Year </h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart">
+                        <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-6">
+            <!-- Sales By Year Chart CHART -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Sales By Year Chart</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart">
+                        <canvas id="SalesByYearChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+
+    </div>
+
+}
+else if (user != null && user.Role == 2)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Welcome to Standard User Dashboard Page.</h1>
+        </div>
+    </div>
+}
+@Scripts.Render("~/Content/home")

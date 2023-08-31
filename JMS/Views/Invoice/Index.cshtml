@@ -1,0 +1,568 @@
+﻿@using JMS.BAL.ViewModel
+@model JMS.BAL.ViewModel.InvoiceViewModel
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+
+
+<div id="primaryDiv" class="card card-outline card-primary">
+    @Html.HiddenFor(m => m.UserName, Model.UserName)
+
+
+    <div class="card-body">
+        @{
+            var edit = TempData["edit"] as bool?;
+            if (edit == null ? false : edit.Value)
+            {
+                <b id="editInvoice">Editing Invoice : @TempData["invoiceId"]</b>
+                <input class="d-none" id="redirect" name="redirect" value=@TempData["invoiceId"] />
+            }
+            else
+            {
+                <input class="d-none" id="redirect" name="redirect" value="" />
+            }
+        }
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card ">
+                    <div class="card-header">
+                        <h6 class="panel-title">Scan Barcode</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <input id="Barcode" onkeypress="return isNumberKey(event)" class="form-control" placeholder="Barcode" aria-label="Search">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="card ">
+                    <div class="card-header">
+                        <h6 class="panel-title">Select from Inventory</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <button class="btn btn-primary" data-toggle="modal" data-target="#InventoryModal">View Inventory List</button>
+                            <button class="btn btn-primary" onclick="adHocAddFunction()" data-toggle="modal" data-target="#adHocModalPopup">AdHoc</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card ">
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-12" style="overflow-x: auto">
+                <table id="tableDestroy" class="table table-bordered table-condensed" style="margin-top:5px">
+                    <thead>
+                        <tr style="background-color: darkgrey">
+                            <th style="width:10px">Id</th>
+                            <th>Gold Weight</th>
+                            <th>Carat Weight</th>
+                            <th>Gold Content</th>
+                            <th>Pieces</th>
+                            <th>Item Description</th>
+                            <th>Current Price</th>
+                            <th style="width:16.5%">Price</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                    <tfoot>
+                        <tr style="font-weight:bold">
+                            <td colspan="6" align="right">
+                                Total
+                            </td>
+                            <td id="totalValueText" colspan="2">
+                                $0.00
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="float-right">
+                    <button id="clearTbody" class="btn btn-warning">Clear All</button>
+                    <button id="btnPayment" class="btn btn-primary" onclick="uploadToModel()" disabled="disabled">Payment</button>
+                    <button id="btnEditPayment" class="btn btn-primary d-none" onclick="uploadEditModel()">Payment</button> @*To avoid payment model reset*@
+                 
+                </div>
+            </div>
+        </div>
+
+      
+
+
+    </div>
+    <div id="ImageModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Inventory Image</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body d-flex justify-content-center align-items-center">
+                    <img class="myImage" />
+                </div>
+
+                <div class="modal-footer float-right ">
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @using (Html.BeginForm("", "", FormMethod.Post, new { id = "invoicePrintForm" }))
+    {
+        <div id="CustomerModal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header p-2">
+                        <h5 class="modal-title">Customer Details Form</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="paymentDetails" class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12 col12">
+                              
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Scan Id / Phone #</label>
+                                        <div class="row">
+                                            <div class="col-6 validation-msg">
+                                                @Html.TextAreaFor(m => m.ScanId, new { @class = "form-control", onpaste = "fetchDLData()", style = "height:38px !important" })
+                                            </div>
+                                            <div class="col-6">
+                                                <button id="searchCustomer" class="btn btn-primary">Scan</button>
+                                                <button type="button" class="btn btn-warning" id="clearCustomerId">Clear</button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>DL#</label>
+                                        <div class="validation-msg">
+                                            @Html.TextBoxFor(m => m.DLNumber, new { @class = "form-control " })
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Exp Date</label>
+                                        <div class="validation-msg">
+                                            @Html.TextBoxFor(m => m.ExpDate, new { @class = "form-control " })
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Date of Birth</label>
+                                        <div class="validation-msg">
+                                            @Html.TextBoxFor(m => m.DOB, new { @class = "form-control " })
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label>Name<span style="color:red">*</span></label>
+                                        <div class="validation-msg">
+                                            @Html.TextBoxFor(m => m.CustomerName, new { @class = "form-control", AutoCompleteType = "Disabled" })
+                                            <span class="d-none" id="validateCustomerName" style="color:red">Please Enter Name</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label>Address</label>
+                                        <div class="validation-msg">
+                                            @Html.TextAreaFor(m => m.Address, new { @class = "form-control ", style = "height:38px !important" })
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>City</label>
+                                        <div class="validation-msg">
+                                            @Html.TextBoxFor(m => m.City, new { @class = "form-control " })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>State</label>
+                                        <div class="validation-msg">
+                                            @Html.TextBoxFor(m => m.State, new { @class = "form-control " })
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>ZipCode</label>
+                                        <div class="validation-msg">
+                                            @Html.TextBoxFor(m => m.Zip, new { @class = "form-control " })
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>Phone</label>
+                                        <div class="input-group validation-msg">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                            </div>
+                                            @Html.TextBoxFor(m => m.CustomerPhone, new { @class = "form-control", placeholder = "(999) 999-9999" })
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>Email</label>
+                                        <div class="validation-msg">
+                                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control " })
+                                        </div>
+                                    </div>
+
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 col-12">
+
+                         
+
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label>Company<span style="color:red">*</span></label>
+                                        <div class="validation-msg">
+                                            @Html.DropDownListFor(m => m.Company, Model.CompanyList, "Select Company", new { @class = "form-control", id = "CompanyId" })
+                                            <span class="d-none" id="validateCompany" style="color:red">Please Select Company </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>Employee<span style="color:red">*</span></label>
+                                        <div class="validation-msg">
+                                            @Html.DropDownListFor(m => m.EmployeeId, Model.EmployeeList, "Select Employee", new { @class = "form-control" })
+                                            <span class="d-none" id="validateEmployee" style="color:red">Please Select Employee </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>Tax</label>
+                                        <div class="validation-msg">
+                                            @Html.DropDownListFor(m => m.Tax, Model.TaxType, new { @class = "form-control " })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>Status</label>
+                                        <div class="validation-msg">
+                                            @Html.DropDownListFor(m => m.Status, Model.InventoryStatus, new { @class = "form-control " })
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>Cheque</label>
+                                        <div class="validation-msg">
+                                            @Html.TextBoxFor(m => m.Check, new { @class = "form-control ", onkeypress = "return isNumberKey(event)", onchange = "changePaymentValue(this)", onkeyup = "changeBalance(this)" })
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Credit Card</label>
+                                        <div class="validation-msg">
+                                            @Html.TextBoxFor(m => m.CreditCard, new { @class = "form-control ", onkeypress = "return isNumberKey(event)", onchange = "changePaymentValue(this)", onkeyup = "changeBalance(this)" })
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Cash</label>
+                                        <div class="validation-msg">
+                                            @Html.TextBoxFor(m => m.Cash, new { @class = "form-control ", onkeypress = "return isNumberKey(event)", onchange = "changePaymentValue(this)", onkeyup = "changeBalance(this)" })
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>SubTotal</label>
+                                        <div class="validation-msg">
+                                            @Html.TextBoxFor(m => m.SubTotal, new { @class = "form-control", disabled = "disabled" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>Balance</label>
+                                        <div class="validation-msg">
+                                            @Html.TextBoxFor(m => m.Balance, new { @class = "form-control ", disabled = "disabled" })
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer p-2">
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+                        <button id="paymentConfirm" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div id="InventoryModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document" style="max-width:1200px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Inventory List</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="overflow-x:auto">
+                    <div id="startingDiv" class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="row">
+                                        <label>
+                                            Item Id
+                                        </label>
+                                        <label style="width:100%">
+                                            <input onkeypress="return isNumberKey(event)" type="search" class="form-control form-control-sm" id="idSearch" name="idSearch" />
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <label>
+                                        Category
+                                    </label>
+                                    @Html.DropDownListFor(m => m.Category, Model.CategoryList, "Select Category", new { @class = "form-control", id = "CategorySearch", style = "height:32px;padding-top:3px" })
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="row">
+                                        <label class="float-right">
+                                            Supplier
+                                        </label>
+                                        @Html.DropDownListFor(m => m.Supplier, Model.Supplier, "Select Supplier", new { @class = "form-control", id = "SupplierSearch", style = "height:32px;padding-top:3px" })
+                                    </div>
+                                </div>&nbsp;&nbsp;
+                                <div class="col-sm-2">
+
+                                    <div class="row">
+                                        <label class="float-right">
+                                            Status
+                                        </label>
+                                        @Html.DropDownListFor(m => m.InventoryStatusValue, Model.StatusList, "Select Status", new { @class = "form-control", id = "StatusSearch", style = "height:32px;padding-top:3px" })
+                                    </div>
+                                </div>
+                                <div>
+
+                                </div>&nbsp;
+                                <button onclick="clearFilter()" class="btn btn-warning" style="margin-bottom: 7px;margin-top: auto;height: 36px;margin-left: 2px;">Clear</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="addContents" class="row">
+
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <nav aria-label="Inventory Page Navigation">
+                                <ul class="pagination justify-content-center m-0">
+                                    <li class="page-item" id="previousButton"><a class="page-link" href="#">Previous</a></li>
+                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">4</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">5</a></li>
+                                    <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">7</a></li>
+                                    <li class="page-item" id="nextButton"><a class="page-link" href="#">Next</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <style>
+                p {
+                    margin-bottom: 0px;
+                }
+            </style>
+        </div>
+    </div>
+    @using (Html.BeginForm("Validation", "Invoice", FormMethod.Post, new { id = "adHocForm" }))
+    {
+        <div id="adHocModalPopup" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-xl" role="document" style="max-width:1230px">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Ad Hoc</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="form-group col-sm-12 col-md-4">
+                                <div class="row">
+                                    <label class="col-4">Company Name</label>
+                                    <div class="col-8">
+                                        @Html.DropDownListFor(m => m.Company, Model.CompanyList, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-12 col-md-4">
+                                <div class="row">
+                                    <label class="col-4">Carat Weight<span style="color:red">*</span></label>
+                                    <div class="col-8 validation-msg">
+                                        @Html.TextBoxFor(m => m.CaratWeight, new { @class = "form-control", onkeypress = "return isNumberKey(event)" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-12 col-md-4">
+                                <div class="row">
+                                    <label class="col-4">Diamond Pieces<span style="color:red">*</span></label>
+                                    <div class="col-8 validation-msg">
+                                        @Html.TextBoxFor(m => m.DiamondPieces, new { @class = "form-control", onkeypress = "return isNumberKey(event)" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-12 col-md-4">
+                                <div class="row">
+                                    <label class="col-4">Jewel Type</label>
+                                    <div class="col-8">
+                                        @Html.DropDownListFor(m => m.JewelType, Model.JewelTypeList, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-12 col-md-4">
+                                <div class="row">
+                                    <label class="col-4">Gold Weight<span style="color:red">*</span></label>
+                                    <div class="col-8 validation-msg">
+                                        @Html.TextBoxFor(m => m.GoldWeight, new { @class = "form-control", onkeypress = "return isNumberKey(event)" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-12 col-md-4">
+                                <div class="row">
+                                    <label class="col-4">Gold Content<span style="color:red">*</span></label>
+                                    <div class="col-8  validation-msg">
+                                        @Html.TextBoxFor(m => m.GoldContent, new { @class = "form-control", onkeypress = "return isNumberKey(event)" })
+                                       
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-12 col-md-4">
+                                <div class="row">
+                                    <label class="col-4">Supplier</label>
+                                    <div class="col-8 validation-msg">
+                                        @Html.DropDownListFor(m => m.Supplier, Model.Supplier, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-12 col-md-4">
+                                <div class="row">
+                                    <label class="col-4">Pieces<span style="color:red">*</span></label>
+                                    <div class="col-8 validation-msg">
+                                        @Html.TextBoxFor(m => m.pieces, new { @class = "form-control", onkeypress = "return isNumberKey(event)" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-12 col-md-4">
+                                <div class="row">
+                                    <label class="col-4">Inventory Status</label>
+                                    <div class="col-8 validation-msg">
+                                        @Html.DropDownListFor(m => m.InventoryStatus, Model.InventoryStatus, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-12 col-md-4">
+                                <div class="row">
+                                    <label class="col-4">Category Name</label>
+                                    <div class="col-8 validation-msg">
+                                        @Html.DropDownListFor(m => m.Category, Model.CategoryList, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-12 col-md-4">
+                                <div class="row">
+                                    <label class="col-4">Price</label>
+                                    <div class="col-8 validation-msg">
+                                        @Html.TextBoxFor(m => m.Price, new { @class = "form-control", onkeypress = "return isNumberKey(event)", onchange = "changePrice(this)" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-12 col-md-4">
+                                <div class="row">
+                                    <label class="col-4">Date Received</label>
+                                    <div class="col-8 validation-msg input-group date" id="datePicker" data-target-input="nearest">
+                                        <input id="DateReceived" type="text" class="form-control datetimepicker-input" data-target="#datePicker">
+                                        <div class="input-group-append" data-target="#datePicker" data-toggle="datetimepicker">
+                                            <div class="input-group-text" style="height:38px"><i class="fa fa-calendar"></i></div>
+                                        </div>
+                                      
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-12 col-md-4 ">
+                                <div class="row">
+                                    <label class="col-4">Description</label>
+                                    <div class="col-8 validation-msg">
+                                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", style = "max-height:38px" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-12 col-md-4">
+                                <div class="row">
+                                    <label class="col-4"> Status</label>
+                                    <div class="col-8 validation-msg">
+                                        @Html.DropDownListFor(m => m.Status, Model.StatusList, new { id = "ValidStatus", @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-right align-self-end">
+                                <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Add Item</button>
+                            </div>
+                        </div>
+                      
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    @Scripts.Render("~/Content/invoice")
+
+</div>
+<style>
+    td > img {
+        display: none;
+    }
+
+    td:hover > img {
+        display: block;
+    }
+
+    tr:hover {
+        cursor: pointer;
+        background-color: lightgrey
+    }
+
+</style>
+
+
+
+
+
+

@@ -1,0 +1,11 @@
+packages/
+JMS/bin/
+JMS/obj/
+JMS.BAL/bin/
+JMS.BAL/obj/
+JMS.Common/bin/
+JMS.Common/obj/
+JMS.DAL/bin/
+JMS.DAL/obj/
+.vs
+JMS/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache

@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7ACAFA76-9DC6-4616-A348-70833774DCBA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JMS.BAL</RootNamespace>
+    <AssemblyName>JMS.BAL</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Barcode\BarcodeCommon.cs" />
+    <Compile Include="Barcode\Barcoder.cs" />
+    <Compile Include="Barcode\BarcodeXML2.Designer.cs" />
+    <Compile Include="Barcode\Blank.cs" />
+    <Compile Include="Barcode\Codabar.cs" />
+    <Compile Include="Barcode\Code11.cs" />
+    <Compile Include="Barcode\Code128.cs" />
+    <Compile Include="Barcode\Code39.cs" />
+    <Compile Include="Barcode\Code93.cs" />
+    <Compile Include="Barcode\EAN13.cs" />
+    <Compile Include="Barcode\EAN8.cs" />
+    <Compile Include="Barcode\FIM.cs" />
+    <Compile Include="Barcode\IBarcode.cs" />
+    <Compile Include="Barcode\Interleaved2of5.cs" />
+    <Compile Include="Barcode\ISBN.cs" />
+    <Compile Include="Barcode\ITF14.cs" />
+    <Compile Include="Barcode\JAN13.cs" />
+    <Compile Include="Barcode\MSI.cs" />
+    <Compile Include="Barcode\Postnet.cs" />
+    <Compile Include="Barcode\Standard2of5.cs" />
+    <Compile Include="Barcode\Telepen.cs" />
+    <Compile Include="Barcode\UPCA.cs" />
+    <Compile Include="Barcode\UPCE.cs" />
+    <Compile Include="Barcode\UPCSupplement2.cs" />
+    <Compile Include="Barcode\UPCSupplement5.cs" />
+    <Compile Include="BussinesLogic\CustomerBAL.cs" />
+    <Compile Include="BussinesLogic\CategoryBAL.cs" />
+    <Compile Include="BussinesLogic\CompanyBAL.cs" />
+    <Compile Include="BussinesLogic\HelperBAL.cs" />
+    <Compile Include="BussinesLogic\HomeBAL.cs" />
+    <Compile Include="BussinesLogic\InventoryAuditBAL.cs" />
+    <Compile Include="BussinesLogic\InventoryBAL.cs" />
+    <Compile Include="BussinesLogic\InventoryStatusBAL.cs" />
+    <Compile Include="BussinesLogic\InvoiceBAL.cs" />
+    <Compile Include="BussinesLogic\InvoiceItemsBAL.cs" />
+    <Compile Include="BussinesLogic\InvoicePaymentsBAL.cs" />
+    <Compile Include="BussinesLogic\JewelTypeBAL.cs" />
+    <Compile Include="BussinesLogic\RoleBAL.cs" />
+    <Compile Include="BussinesLogic\SupplierBAL.cs" />
+    <Compile Include="BussinesLogic\UserBAL.cs" />
+    <Compile Include="Models\InventoryModel.cs" />
+    <Compile Include="Models\JewelTypeModel.cs" />
+    <Compile Include="Models\RoleModel.cs" />
+    <Compile Include="Models\SupplierModel.cs" />
+    <Compile Include="Models\UserModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModel\AdhocViewModel.cs" />
+    <Compile Include="ViewModel\CustomerViewModel.cs" />
+    <Compile Include="ViewModel\InventoryAuditViewModel.cs" />
+    <Compile Include="ViewModel\InventoryStatusViewModel.cs" />
+    <Compile Include="ViewModel\InventoryViewModel.cs" />
+    <Compile Include="ViewModel\InvoiceListViewModel.cs" />
+    <Compile Include="ViewModel\InvoicePrintModel.cs" />
+    <Compile Include="ViewModel\InvoicePaymentViewModel.cs" />
+    <Compile Include="ViewModel\InvoiceViewModel.cs" />
+    <Compile Include="ViewModel\JewelTypeViewModel.cs" />
+    <Compile Include="ViewModel\CategoryViewModel.cs" />
+    <Compile Include="ViewModel\CompanyViewModel.cs" />
+    <Compile Include="ViewModel\LoginViewModel.cs" />
+    <Compile Include="ViewModel\PaymentModel.cs" />
+    <Compile Include="ViewModel\RoleViewModel.cs" />
+    <Compile Include="ViewModel\SupplierViewModel.cs" />
+    <Compile Include="ViewModel\UserViewModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JMS.Common\JMS.Common.csproj">
+      <Project>{de21a0cd-1cd8-4e91-be63-4ee1957d53c0}</Project>
+      <Name>JMS.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\JMS.DAL\JMS.DAL.csproj">
+      <Project>{557c7715-ed41-410a-98d7-8b735bdf5ba7}</Project>
+      <Name>JMS.DAL</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Barcode\BarcodeXML.xsc">
+      <DependentUpon>BarcodeXML.xsd</DependentUpon>
+    </None>
+    <None Include="Barcode\BarcodeXML.xsd" />
+    <None Include="Barcode\BarcodeXML.xss">
+      <DependentUpon>BarcodeXML.xsd</DependentUpon>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -1,0 +1,105 @@
+﻿@using JMS.BAL.ViewModel
+@model JMS.BAL.ViewModel.InventoryViewModel
+@{
+    ViewBag.Title = "Inventory Audit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var user = Session["LoggedInUser"] as LoggedInUserModel;
+    if (user?.Role != 1)
+    {
+        Response.Redirect("~/Login/Index");
+    }
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex align-items-center">
+                    <h6 class="panel-title">Scan Barcode</h6>
+                    <div class="d-flex align-items-center ml-2">
+                        <input id="Barcode" onkeypress="return fetchInventoryDetails(event)" class="form-control" style="width: 150px;" placeholder="Scan Barcode" aria-label="Scan Barcode">
+                        <button id="downloadButton" class="btn btn-primary download-button" onclick="downloadTableAsExcel() " disabled>Download</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="card">
+    <div class="row">
+        <div class="col-md-12 col-12">
+
+            <div class="table-container">
+                <table id="inventory_audit_table" class="table table-bordered table-condensed" style="margin-top: 5px">
+                    <thead>
+                        <tr style="background-color: darkgrey">
+                            <th style="width: 50px">Id</th>
+                            <th>Gold Weight</th>
+                            <th>Carat Weight</th>
+                            <th>Gold Content</th>
+                            <th>Pieces</th>
+                            <th>Item Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryTableBody">
+                        <!-- Add ID to the tbody element -->
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<style>
+
+
+    button {
+        margin: 10px;
+        padding: 8px 16px;
+        cursor: pointer;
+    }
+
+    .table-container {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    #inventory_audit_table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+        #inventory_audit_table thead {
+            position: sticky;
+            top: 0;
+            background-color: darkgrey;
+            z-index: 1;
+        }
+
+    .download-button {
+        float: left;
+        margin-left: 800px; 
+    }
+</style>
+
+<!-- Example of linking a JavaScript file named "InventoryAudit.js" -->
+<script src="~/Content/js/InventoryAuditReport.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>

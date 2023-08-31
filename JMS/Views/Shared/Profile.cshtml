@@ -1,0 +1,36 @@
+﻿@using JMS.BAL.ViewModel
+@{
+    var user = Session["LoggedInUser"] as LoggedInUserModel;
+}
+@if (user != null)
+{
+<li class="nav-item dropdown user user-menu">
+    <a href="#" class="" data-toggle="dropdown">
+        <img src="~/admin-lte/dist/img/avatar.png" class="user-image" alt="User Image">
+        <span id="userName" class="hidden-xs dropdown-toggle">@user.UserName</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-right">
+        <!-- User image -->
+        <li class="user-header">
+            <img src="~/admin-lte/dist/img/avatar.png" class="img-circle" alt="User Image">
+            <p>
+               <h4>@user.UserName</h4>
+                <h5>@user.Email</h5>
+            </p>
+        </li>
+        <!-- Menu Footer-->
+        <li class="user-footer row">
+            <div class="pull-left col-6">
+                &nbsp;
+            </div>
+            <div class=" col-6" style="text-align:right">
+                @using (Html.BeginForm("Logout", "Home", new { Area = "" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <button class="btn btn-default btn-flat" type="submit"><i class="fas fa-sign-out-alt"></i>&nbsp;Logout</button>
+                }
+            </div>
+        </li>
+    </ul>
+</li>
+}

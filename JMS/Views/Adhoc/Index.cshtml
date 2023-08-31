@@ -1,0 +1,106 @@
+﻿@using JMS.BAL.ViewModel
+@model JMS.BAL.ViewModel.AdhocViewModel
+@{
+    ViewBag.Title = "Ad-Hoc";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="card card-outline card-primary">
+    <div class="card-header">
+        <div class="float-left">
+            <h3>@ViewBag.Title</h3>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-3 col-md-2">Company:</label>
+                        @Html.DropDownListFor(m => m.SelectedCompany, HelperViewModel.companylist, new { @class = "form-control col-9" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-3 col-md-2">JewelType:</label>
+                        @Html.DropDownListFor(m => m.SelectedJewelType, HelperViewModel.jeweltypelist, new { @class = "form-control col-9" })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-3 col-md-2">Category:</label>
+                        @Html.DropDownListFor(m => m.SelectedCategory, HelperViewModel.categorylist, new { @class = "form-control col-9" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-3 col-md-2">Carat Weight:</label>
+                        @Html.TextBoxFor(m => m.CaratWeight, new { @class = "form-control col-9" })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-3 col-md-2">Gold Content:</label>
+                        @Html.TextBoxFor(m => m.GoldContent, new { @class = "form-control col-9" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-3 col-md-2">No of Pieces:</label>
+                        @Html.TextBoxFor(m => m.NumberOfPieces, new { @class = "form-control col-9" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-3 col-md-2">Other Stones:</label>
+                        @Html.TextBoxFor(m => m.OtherStones, new { @class = "form-control col-9" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-3 col-md-2">Description:</label>
+                        @Html.TextBoxFor(m => m.Description, new { @class = "form-control col-9" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-3 col-md-2">Prices:</label>
+                        @Html.TextBoxFor(m => m.Price, new { @class = "form-control col-9" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="float-right">
+            <button type="button" class="btn btn-primary">Add Item</button>
+        </div>
+        
+    </div>
+</div>
+

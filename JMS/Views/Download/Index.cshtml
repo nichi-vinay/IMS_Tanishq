@@ -1,0 +1,169 @@
+﻿@using JMS.BAL.ViewModel
+@model JMS.BAL.ViewModel.InventoryViewModel
+@{
+    ViewBag.Title = "Download";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var user = Session["LoggedInUser"] as LoggedInUserModel;
+
+    if (user?.Role != 1)
+    {
+        Response.Redirect("~/Login/Index");
+    }
+}
+
+<div class="card card-outline card-primary">
+    <div class="card-header">
+        <div class="float-left">
+            <h3>@ViewBag.Title Inventory</h3>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-2">
+                <label>
+                    Category
+                </label>
+                @Html.DropDownListFor(m => m.Category, Model.Category, "Select Category", new { id = "filterCategory", @class = "form-control", style = "height:32px;padding-top:3px" })
+            </div>
+            <div class="col-sm-2">
+                <div class="row">
+                    <label class="float-right">
+                        Supplier
+                    </label>
+                    @Html.DropDownListFor(m => m.Supplier, Model.Supplier, "Select Supplier", new { id = "filterSupplier", @class = "form-control", style = "height:32px;padding-top:3px" })
+                </div>
+            </div>&nbsp;&nbsp;
+            <div class="col-sm-2">
+                <div class="row">
+                    <label class="float-right">
+                        Inventory Status
+                    </label>
+                    @Html.DropDownListFor(m => m.InventoryStatus, Model.InventoryStatus, "Select Inventory Status", new { id = "filterInventoryStatus", @class = "form-control", style = "height:32px;padding-top:3px" })
+                </div>
+            </div>&nbsp;&nbsp;
+            <div class="col-sm-2">
+                <div class="row">
+                    <label class="float-right">
+                        Status
+                    </label>
+                    @Html.DropDownListFor(m => m.Status, Model.StatusList, "Select Status", new { id = "filterStatus", @class = "form-control", style = "height:32px;padding-top:3px" })
+                </div>
+            </div>&nbsp;&nbsp;
+
+            <div>
+            </div>&nbsp;&nbsp;
+            <button onclick="DownloadInventory()" class="btn btn-primary" style="margin-bottom: 0px;margin-top: auto;height: 36px;margin-left: 2px;">Download</button>
+        </div>
+    </div>
+</div>
+<div class="card card-outline card-primary">
+    <div class="card-header">
+        <div class="float-left">
+            <h3>@ViewBag.Title Invoices</h3>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>From Date</label>
+                            <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                                <input id="fromDate" type="text" class="form-control datetimepicker-input" data-target="#reservationdate">
+                                <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>To Date</label>
+                            <div class="input-group date" id="reservationdate2" data-target-input="nearest">
+                                <input id="toDate" type="text" class="form-control datetimepicker-input" data-target="#reservationdate2">
+                                <div class="input-group-append" data-target="#reservationdate2" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="form-group">
+                    <label>Customer Phone Number</label>
+                    <div class="input-group validation-msg">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="(999) 999-9999" id="CustomerPhone" name="CustomerPhone" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="row">
+                    <label class="float-right">
+                        Status
+                    </label>
+                    @Html.DropDownListFor(m => m.Status, Model.StatusList, "Select Status", new
+                    {
+                        id = "invoiceStatus",
+                        @class = "form-control"@*, style = "height:32px;padding-top:3px"*@})
+                </div>
+            </div>&nbsp;&nbsp;
+            <button onclick="DownloadInvoices()" class="btn btn-primary" style="margin-bottom: 0px;margin-top: 32px;height: 36px;margin-left: 2px;">Download</button>
+        </div>
+    </div>
+</div>
+<script>
+    $('#reservationdate').datetimepicker({
+        format: 'MM-DD-yyyy'
+    });
+    $('#reservationdate2').datetimepicker({
+        format: 'MM-DD-yyyy'
+    });
+    $(function () {
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+        $('#fromDate').val(mm + '-' + dd + '-' + yyyy);
+        $('#toDate').val(mm + '-' + dd + '-' + yyyy);
+        $('#filterStatus').val('');
+        $('#invoiceStatus').val('');
+    })
+    function DownloadInvoices() {        
+        var frmDate = $('#fromDate').val();
+        var toDate = $('#toDate').val();
+        var custPhone = $('#CustomerPhone').val();
+        var status = $('#invoiceStatus').val();
+
+        var object = {
+            fromDate: frmDate, toDate: toDate, custPhone: custPhone, status: status
+        };
+        var urlParams = $.param(object);
+        window.location.href = "Download/InvoiceExportList?" + urlParams;
+    }
+    function DownloadInventory() {
+        var catId = $('#filterCategory').val() == "" ? '0' : $('#filterCategory').val();
+        var supId = $('#filterSupplier').val() == "" ? '0' : $('#filterSupplier').val();
+        var invenStatId = $('#filterInventoryStatus').val() == "" ? '0' : $('#filterInventoryStatus').val();
+        var status = $('#filterStatus').val() == "" ? '0' : $('#filterStatus').val();
+
+        var object = {
+            categoryId: catId, supplierId: supId, inventoryStatusId: invenStatId, status: status
+        };
+        var urlParams = $.param(object);
+        window.location.href = "Download/ExportList?" + urlParams;
+    }
+    document.getElementById('CustomerPhone').addEventListener('input', function (e) {
+        var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+        e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+    });//Masking Customer phone number
+</script>
+<style>
+    .bootstrap-datetimepicker-widget {
+        min-width: 330px
+    }
+</style>

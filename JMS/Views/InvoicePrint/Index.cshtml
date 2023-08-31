@@ -1,0 +1,457 @@
+﻿@using JMS.BAL.ViewModel
+@model JMS.BAL.ViewModel.InvoicePrintModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Print</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+
+    <link rel="stylesheet" href="~/admin-lte/plugins/fontawesome-free/css/all.min.css">
+
+    <link rel="stylesheet" href="~/admin-lte/dist/css/adminlte.min.css">
+
+</head>
+<body>
+    <div class="container noprint">
+        <div class="col-md-12 text-center ">
+            <button class="btn btn-primary btn-lg" style="height:55px; width:200px" id="print">Print Invoice</button>
+            @{
+                var edit = TempData["btnEdit"] as bool?;
+                if (edit == null ? false : edit.Value)
+                {
+                    <button class="btn btn-primary btn-lg" type="submit" style="height:55px; width:200px" id="editInvoice">Edit Invoice</button>
+                }
+            }
+        </div>
+    </div>
+    <br />
+    <div id="firsttable" class="wrapper">
+        <section class="invoice">
+            <div id="divs" class="row " style="border:2px solid;margin-left:0px;margin-right:0px ;">
+                <div class="col-9 " style="font-weight:bold;">
+                    <div class="row" style="border-right:2px solid;font-size:15px">
+                        <address class="col-5">
+                            <strong style="font-size: 30px;">@Model.companyName.</strong><br>
+                            @Model.companyAddressLine1<br>
+                            @Model.companyAddressLine2<br>
+                            Phone: @Model.companyPhone<br>
+                            Email: @Model.companyEmail
+                        </address>
+                        <address class="col-7">
+                            <strong style="font-size: x-large;">Sold To:</strong><br>
+                            @Model.customerName<br>
+                            @if (!string.IsNullOrEmpty(Model.customerAddressLine1))
+                            {
+                                <div class="col-12" style="padding-left:0px">
+                                    @Model.customerAddressLine1<br>
+                                </div>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.customerAddressLine2))
+                            {
+                                <div class="col-12" style="padding-left:0px">
+                                    @Model.customerAddressLine2<br>
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(Model.customerPhone) && !string.IsNullOrEmpty(Model.customerEmail))
+                            {
+
+                                @: Phone: @Model.customerPhone,&nbsp;Email: @Model.customerEmail
+
+                            }
+                            else if (!string.IsNullOrEmpty(Model.customerPhone) && string.IsNullOrEmpty(Model.customerEmail))
+                            {
+                                @:  Phone: @Model.customerPhone
+                            }
+
+                            else if (!string.IsNullOrEmpty(Model.customerEmail) && string.IsNullOrEmpty(Model.customerPhone))
+                            {
+                                @:Email: @Model.customerEmail
+                            }
+                        </address>
+                    </div>
+                </div>
+                <div class="col-3 " style="">
+                    <div style="text-align:center">
+                       <b style="font-size: x-large">
+                            @if (Model.InventoryStatusId == 1)
+                            {
+                                @:Layaway Invoice @Model.invoice
+                            }
+                            else
+                            {
+                                @:Invoice @Model.invoice
+                            }
+
+                        </b><br>
+                        <b style="font-size: larger;">
+                            Date: @Model.currentDate.ToString("MM/dd/yyyy")
+                        </b>
+                    </div>
+
+                </div>
+            </div>
+
+            <table class="table table-bordered tables" style="margin-bottom: -2px; font-weight:bold;">
+                @if (Model.layAway)
+                {
+                    <thead>
+                        <tr>
+                            <th id="th1" width="123px" style="text-align: center;padding: 0px !important">#</th>
+                            <th id="th1" width="877px" style="text-align: center;padding: 0px !important">ITEM</th>
+                            <th class="pcs" id="th1" style="text-align: center;padding: 0px !important">PCS</th>
+                            <th class="amount" id="th1" style="text-align: center;padding: 0px !important">AMOUNT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="tds">1</td>
+                            <td id="tds" style="text-align:left !important">Payment for Layaway Invoice #@Model.layAwayId</td>
+                            <td id="tds"></td>
+                            <td id="tds">$@Model.totalPaid</td>
+                        </tr>
+                        @for (int i = 0; i < 9; i++)
+                        {
+                            <tr>
+                                <td id="tds"></td>
+                                <td id="tds"></td>
+                                <td id="tds"></td>
+                                <td id="tds"></td>
+
+                            </tr>
+                        }
+                    </tbody>
+                }
+                else
+                {
+                    <thead>
+                        <tr>
+                            <th id="th1" width="123px" style="text-align: center;padding: 0px !important;">#</th>
+                            <th id="th1" width="877px" style="text-align: center;padding: 0px !important">ITEM</th>
+                            <th class="pcs" id="th1" style="text-align: center;padding: 0px !important">PCS</th>
+                            <th class="amount" id="th1" style="text-align: center;padding: 0px !important">AMOUNT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr style="">
+                                <td id="tds">@{var id = item.Id == 0 ? "" : item.Id.ToString();} @id</td>
+                                <td id="tds" style="text-align:left !important">@item.Description</td>
+                                <td id="tds">@item.Pieces</td>
+                                <td id="tds" style="padding: 0px !important;text-align:center;height:25px !important">@{var price = string.IsNullOrEmpty(id) ? "" : "$" + @item.Price;} @price</td>
+                            </tr>
+                        }
+                    </tbody>
+                }
+                <tfoot style="">
+                    <tr>
+                        <td id="tds" style="padding: 0px !important; text-align:right;padding-right:5px !important;" colspan="3">SUB TOTAL</td>
+                        <td id="tds" style="padding: 0px !important;text-align:center" colspan="1">$@Model.subTotal</td>
+                    </tr>
+                    <tr>
+                        <td class="tds" style="padding: 0px !important; text-align: right; padding-right: 5px !important; font-size: large;" colspan="3">
+                            @{string taxtype = ""; if (Model.tax == "SHIP")
+                                {
+                                    taxtype = "SHIPPING";
+                                }
+                                else
+                                {
+                                    taxtype = "TAX";
+                                } } @taxtype
+                            </td>
+                        <td id="tds" style="padding: 0px !important;text-align:center"  colspan="1">@Model.tax</td>
+                        </tr>
+                        <tr>
+                            <td id="tds" style="padding: 0px !important;text-align:right;padding-right:5px !important;" colspan="3">TOTAL</td>
+                            <td id="tds" style="padding: 0px !important;text-align:center" colspan="1">$@Model.subTotal</td>
+                        </tr>
+                        <tr>
+                            <td id="tds" style="padding: 0px !important;text-align:right;padding-right:5px !important;" colspan="3">AMOUNT PAID(Cash/Cheque)</td>
+                            <td id="tds" style="padding: 0px !important;text-align:center" colspan="1">$@decimal.Parse(Model.cash).ToString("#0.00") / $@decimal.Parse(Model.cheque).ToString("#0.00") </td>
+                        </tr>
+                        <tr>
+                            <td id="tds" style="padding: 0px !important; text-align: right; padding-right: 5px !important;" colspan="3">AMOUNT PAID(CreditCard)</td>
+                            <td id="tds" style="padding: 0px !important;text-align:center" colspan="1">$@decimal.Parse(Model.creditCard).ToString("#0.00")</td>
+                        </tr>
+                        <tr>
+                            <td id="tds" style="padding: 0px !important; text-align: right; padding-right: 5px !important;" colspan="3">BALANCE</td>
+                            <td id="tds" style="padding: 0px !important;text-align:center" colspan="1">$@Model.balance</td>
+                        </tr>
+                    </tfoot>
+
+                </table>
+                <div id="divs" class="row" style="border:2px solid;margin-left:0px;margin-right:0px;align-items:flex-end;font-weight:bold;">
+                    <p class="col-3" style="vertical-align:bottom"> Sales Person : @Model.salesPerson</p>
+                    <p class="col-9" style="margin-top: 10px; font-size:small; text-align:center">
+                        ALL SALES FINAL * NO REFUNDS * EXCHANGE WITHIN 7 DAYS ONLY. FOR EXCHANGE GOODS MUST BE IN ORIGINAL CONDITION<br />
+                        @{string exchange = ""; if (Model.companyName == "Kirti Jewelers")
+                            {
+                                exchange = " 22 KARAT JEWELERY SHOULD BE EXCHANGED FOR 22 KARAT JEWELERY ONLY. ";
+                            }
+                            else
+                            {
+                                exchange = "DIAMOND JEWELRY MUST BE EXCHANGED WITH DIAMOND JEWELRY ONLY. ";
+                            }
+                        } @exchange<br /> THE MERCHANDISE LISTED REMAINS PROPERTY OF KIRTI JEWELERS UNTIL PAID FOR IN GOOD FUNDS<br />
+                        WE ARE NOT RESPONSIBLE FOR ANY DAMAGE ONCE JEWELRY LEAVES OUR PREMISES
+                    </p>
+                </div>
+            </section>
+        </div>
+        <br />
+        <br />
+        <!-- ./wrapper -->
+        <div id="secondtable" class="wrapper">
+            <section class="invoice">
+                <div id="divs" class="row " style="border:2px solid;margin-left:0px;margin-right:0px">
+                    <div class="col-9" style="font-weight:bold;">
+                        <div class="row" style="border-right:2px solid;font-size:15px">
+                            <address class="col-5">
+                                <strong style="font-size: 30px;">@Model.companyName.</strong><br>
+                                @Model.companyAddressLine1<br>
+                                @Model.companyAddressLine2<br>
+                                Phone: @Model.companyPhone<br>
+                                Email: @Model.companyEmail
+                            </address>
+                            <address class="col-7">
+                                <strong style="font-size: x-large;">Sold To:</strong><br>
+                                @Model.customerName<br>
+                                @if (!string.IsNullOrEmpty(Model.customerAddressLine1))
+                                {
+                                    <div class="col-12" style="padding-left:0px">
+                                        @Model.customerAddressLine1<br>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(Model.customerAddressLine2))
+                                {
+                                    <div class="col-12" style="padding-left:0px">
+                                        @Model.customerAddressLine2<br>
+                                    </div>
+                                }
+
+                                @if (!string.IsNullOrEmpty(Model.customerPhone) && !string.IsNullOrEmpty(Model.customerEmail))
+                                {
+
+                                    @: Phone: @Model.customerPhone,&nbsp;Email: @Model.customerEmail
+
+
+
+
+                                }
+                                else if (!string.IsNullOrEmpty(Model.customerPhone) && string.IsNullOrEmpty(Model.customerEmail))
+                                {
+                                    @:  Phone: @Model.customerPhone
+                                }
+
+                                else if (!string.IsNullOrEmpty(Model.customerEmail) && string.IsNullOrEmpty(Model.customerPhone))
+                                {
+                                    @:Email: @Model.customerEmail
+                                }
+                            </address>
+                        </div>
+
+                    </div>
+                    <div class="col-3 " style="">
+                        <div style="text-align:center">
+                            <b style="font-size: x-large">
+                                @if (Model.InventoryStatusId == 1)
+                                {
+                                    @:Layaway Invoice @Model.invoice
+                                }
+                                else
+                                {
+                                    @:Invoice @Model.invoice
+                                }
+
+                            </b><br>
+                            <b style="font-size: larger;">
+                                Date: @Model.currentDate.ToString("MM/dd/yyyy")
+                            </b>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-bordered" style="margin-bottom: -2px; font-weight:bold;">
+                    @if (Model.layAway)
+                    {
+                        <thead>
+                            <tr>
+                                <th id="th1" width="123px" style="text-align: center;padding: 0px !important">#</th>
+                                <th id="th1" width="877px" style="text-align: center;padding: 0px !important">ITEM</th>
+                                <th class="pcs" id="th1" style="text-align: center;padding: 0px !important">PCS</th>
+                                <th class="amount" id="th1" style="text-align: center;padding: 0px !important">AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td id="tds">1</td>
+                                <td id="tds" style="text-align:left !important">Payment for Layaway Invoice #@Model.layAwayId</td>
+                                <td id="tds"></td>
+                                <td id="tds">$@Model.totalPaid</td>
+                            </tr>
+                            @for (int i = 0; i < 9; i++)
+                            {
+                                <tr>
+                                    <td id="tds"></td>
+                                    <td id="tds"></td>
+                                    <td id="tds"></td>
+                                    <td id="tds"></td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    }
+                    else
+                    {
+                        <thead>
+                            <tr>
+                                <th id="th1" width="123px" style="text-align: center;padding: 0px !important">#</th>
+                                <th id="th1" width="877px" style="text-align: center;padding: 0px !important">ITEM</th>
+                                <th class="pcs" id="th1" style="text-align: center;padding: 0px !important">PCS</th>
+                                <th class="amount" id="th1" style="text-align: center;padding: 0px !important">AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr style="">
+                                    <td id="tds">@{var id = item.Id == 0 ? "" : item.Id.ToString();} @id</td>
+                                    <td id="tds" style="text-align:left !important">@item.Description</td>
+                                    <td id="tds">@item.Pieces</td>
+                                    <td id="tds" style="padding: 0px !important;text-align:center;height:25px !important">@{var price = string.IsNullOrEmpty(id) ? "" : "$" + @item.Price;}@price</td>
+                                </tr>
+                            }
+                        </tbody>
+                    }
+                    <tfoot style="">
+                        <tr>
+                            <td id="tds" style="padding: 0px !important; text-align:right;padding-right:5px !important;" colspan="3">SUB TOTAL</td>
+                            <td id="tds" style="padding: 0px !important;text-align:center" colspan="1">$@Model.subTotal</td>
+                        </tr>
+                        <tr>
+                            <td id="tds" style="padding: 0px !important; text-align: right; padding-right: 5px !important;" colspan="3">
+                                @taxtype
+                            </td>
+                            <td id="tds" style="padding: 0px !important;text-align:center" colspan="1">@Model.tax</td>
+                        </tr>
+                        <tr>
+                            <td id="tds" style="padding: 0px !important; text-align: right; padding-right: 5px !important;" colspan="3">TOTAL</td>
+                            <td id="tds" style="padding: 0px !important;text-align:center" colspan="1">$@Model.subTotal</td>
+                        </tr>
+                        <tr>
+                            <td id="tds" style="padding: 0px !important; text-align: right; padding-right: 5px !important;" colspan="3">AMOUNT PAID(Cash/Cheque)</td>
+                            <td id="tds" style="padding: 0px !important;text-align:center" colspan="1">$@decimal.Parse(Model.cash).ToString("#0.00") / $@decimal.Parse(Model.cheque).ToString("#0.00") </td>
+                        </tr>
+                        <tr>
+                            <td id="tds" style="padding: 0px !important; text-align: right; padding-right: 5px !important;" colspan="3">AMOUNT PAID(CreditCard)</td>
+                            <td id="tds" style="padding: 0px !important;text-align:center" colspan="1">$@decimal.Parse(Model.creditCard).ToString("#0.00")</td>
+                        </tr>
+                        <tr>
+                            <td id="tds" style="padding: 0px !important; text-align: right; padding-right: 5px !important;" colspan="3">BALANCE</td>
+                            <td id="tds" style="padding: 0px !important;text-align:center" colspan="1">$@Model.balance</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <div id="divs" class="row" style="border:2px solid;margin-left:0px;margin-right:0px;align-items:flex-end;font-weight:bold;">
+                    <p class="col-3" style="vertical-align:bottom"> Sales Person : @Model.salesPerson</p>
+                    <p class="col-9" style="margin-top: 10px; font-size:small; text-align:center">
+                        ALL SALES FINAL * NO REFUNDS * EXCHANGE WITHIN 7 DAYS ONLY. FOR EXCHANGE GOODS MUST BE IN ORIGINAL CONDITION<br />
+                        @exchange<br /> THE MERCHANDISE LISTED REMAINS PROPERTY OF KIRTI JEWELERS UNTIL PAID FOR IN GOOD FUNDS<br />
+                        WE ARE NOT RESPONSIBLE FOR ANY DAMAGE ONCE JEWELRY LEAVES OUR PREMISES
+                    </p>
+
+                </div>
+
+            </section>
+            @using (Html.BeginForm("RedirectToInvoice", "InvoicePrint", FormMethod.Post, new { id = "Redirect" }))
+            {
+            }
+
+        </div>
+        <!-- Page specific script -->
+
+        <script>
+            $('#editInvoice').click(function () {
+                $("#Redirect").submit();
+            })
+            $('#print').click(function () {
+                window.print();
+                window.location = "/InvoiceList/Index";
+            });
+
+        </script>
+
+        <style>
+            @@media screen {
+                th {
+                    background-color: #7292CC !important;
+                }
+
+                table, th, td {
+                    border: 2px solid black !important;
+                }
+
+                tbody td, th {
+                    padding: 0px !important;
+                    text-align: center;
+                    height: 25px !important
+                }
+                #tds {
+                    font-size: large !important;
+                }
+            }
+
+            @@media print {
+          
+                #th1 {
+                    background-color: #7292CC !important;
+                    -webkit-print-color-adjust: exact !important;
+                }
+
+                #firsttable {
+                    position: absolute;
+                    top: 20px;
+                  
+                }
+
+                #secondtable {
+                    position: absolute;
+                    top: 790px;
+                }
+
+                .pcs {
+                    -webkit-print-color-adjust: exact !important;
+                    width: 100px;
+                }
+
+                .amount {
+                    width: 400px;
+                    -webkit-print-color-adjust: exact !important;
+                }
+
+                .tables {
+                    border: 2px solid black;
+                }
+
+                #th1 {
+                    border: 2px solid black !important;
+                    -webkit-print-color-adjust: exact !important;
+                }
+
+                #tds {
+                    border: 2px solid black !important;
+                    font-size: large !important;
+                   
+                }
+
+                #divs {
+                    border: 2px solid black !important;
+                }
+            }
+        </style>
+    </body>
+</html>

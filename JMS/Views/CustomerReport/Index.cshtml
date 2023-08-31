@@ -1,0 +1,42 @@
+﻿@using JMS.BAL.ViewModel
+@model JMS.BAL.ViewModel.InvoiceListViewModel
+@{
+    ViewBag.Title = "Customer Invoice Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var user = Session["LoggedInUser"] as LoggedInUserModel;
+    if (user?.Role != 1)
+    {
+        Response.Redirect("~/Login/Index");
+    }
+}
+
+<div class="card card-outline card-primary">
+    <div class="card-header">
+        <div class="float-left">
+            <h3>@ViewBag.Title</h3>
+        </div>
+    </div>
+    <div class="card-body">
+        <table id="customerReportTable" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Customer ID
+                    </th>
+                    <th>
+                        Customer Name
+                    </th>
+
+                    <th>
+                        Purchase Count
+                    </th>
+                    <th>
+                        Total Amount
+                    </th>
+
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+@Scripts.Render("~/Content/customerReport")
